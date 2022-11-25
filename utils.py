@@ -3,6 +3,7 @@ import os
 import matplotlib.pyplot as plt
 from skimage import io, transform
 from torch.utils.data import Dataset, DataLoader
+import torchvision
 
 # Functon to plot story
 # function to plot metrics
@@ -19,20 +20,31 @@ class FaceDataset(Dataset):
         self.image_dir = image_dir
         self.image_dict = self.load_image()
 
+
     def __len__(self) :
         return len(self.image_dict["label"])
 
 
     def __getitem__(self, index) :
-        return io.imread(self.image_dict["img_dir"][index], as_gray=True), self.image_dict["label"][index]
+        
+        
+        path = io.imread(self.image_dict["img_dir"][index], as_gray=True)
+        label = self.image_dict["label_bin"][index]
+        
+        return path, label
 
 
     def load_image(self) :
-        img_dict = {"img_dir" : [], "label" : []}
+        img_dict = {"img_dir" : [], "label" : [], 'label_bin':[]}
         for root, dirs, files in os.walk(self.image_dir):
             for img in files:
                 img_dict["img_dir"].append(os.path.join(root, img))
+                
                 img_dict["label"].append(img[:4])
+                if img[:4] != 'real':
+                    img_dict["label_bin"].append(0)
+                else:
+                    img_dict["label_bin"].append(1)
                 #print(f"{os.path.join(root, img)} ===>{img[:4]}")
         return img_dict
 
