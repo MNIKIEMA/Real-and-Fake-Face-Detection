@@ -24,7 +24,10 @@ class FaceDataset(Dataset):
 
 
     def __getitem__(self, index) :
-        return io.imread(self.image_dict["img_dir"][index], as_gray=True), self.image_dict["label"][index]
+        img = torch.from_numpy(io.imread(self.image_dict["img_dir"][index],
+        as_gray=True,plugin='matplotlib').astype(float))
+        labels = torch.Tensor([(l=="real") for l in self.image_dict["label"][index]], dtype=torch.FloatTensor)
+        return img, labels
 
 
     def load_image(self) :
@@ -47,7 +50,7 @@ def plot_history(history, figsize=(8,6),
         figsize: fig size
         plot: list of data to plot : {<title>:[<metrics>,...], ...}
     """
-    fig_id=0
+    
     for title,curves in plot.items():
         plt.figure(figsize=figsize)
         plt.title(title)
