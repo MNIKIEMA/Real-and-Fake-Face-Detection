@@ -1,2 +1,5 @@
 /__pycache__
 /data
+/outputs
+/mlp_parameters.pt
+/cnn_parameters.pt
